@@ -2,6 +2,7 @@
 #include "ui_mainwindow.h"
 #include "mdichild.h"
 #include <QMdiSubWindow>
+#include <QFileDialog>
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -115,4 +116,24 @@ void MainWindow::on_actionOpen_triggered()
             child->close();
         }
     }
+}
+
+QMdiSubWindow * MainWindow::findMdiChild(const QString &fileName) // 查找子窗口
+{
+    QString canonicalFilePath = QFileInfo(fileName).canonicalFilePath();
+
+    // 利用foreach语句遍历子窗口列表，如果其文件路径和要查找的路径相同，则返回该窗口
+    foreach (QMdiSubWindow *window, ui->mdiArea->subWindowList()) {
+        MdiChild *mdiChild = qobject_cast<MdiChild *>(window->widget());
+        if (mdiChild->currentFile() == canonicalFilePath)
+            return window;
+    }
+    return 0;
+}
+
+void MainWindow::setActiveSubWindow(QWidget *window) // 设置活动子窗口
+{
+    if (!window) // 如果传递了窗口部件，则将其设置为活动窗口
+        return;
+    ui->mdiArea->setActiveSubWindow(qobject_cast<QMdiSubWindow *>(window));
 }

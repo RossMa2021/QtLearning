@@ -27,11 +27,13 @@ CONFIG += c++11
 SOURCES += \
         main.cpp \
         mainwindow.cpp \
-    mybox.cpp
+    mybox.cpp \
+    myview.cpp
 
 HEADERS += \
         mainwindow.h \
-    mybox.h
+    mybox.h \
+    myview.h
 
 FORMS += \
         mainwindow.ui

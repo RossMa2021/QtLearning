@@ -2,6 +2,12 @@
 #include "mybox.h"
 #include <QIcon>
 
+//涉及动画效果
+// 在2-2中添加的代码
+#include <QPropertyAnimation>
+#include <QGraphicsBlurEffect>
+#include <QTimer>
+
 // 游戏的初始速度
 static const qreal INITSPEED = 500;
 
@@ -76,7 +82,21 @@ void MyView::clearFullRows()
         if (list.count() == 10) {
             foreach (QGraphicsItem *item, list) {
                 OneBox *box = (OneBox*) item;
-                box->deleteLater();
+                //deleteLater 本身就是一个slot,可以用作接受信号
+                //box->deleteLater();
+                // 在2-2中添加的代码
+                QGraphicsBlurEffect *blurEffect = new QGraphicsBlurEffect;
+                box->setGraphicsEffect(blurEffect);
+                QPropertyAnimation *animation = new QPropertyAnimation(box, "scale");
+                animation->setEasingCurve(QEasingCurve::OutBounce);  /*  设置动画效果  */
+                animation->setDuration(250);/*  设置动画持续时长为 250 毫秒  */
+                animation->setStartValue(4);/*  设置动画起始值  */
+                animation->setEndValue(0.25);/*  设置动画结束值  */
+                /*  开始执行动画 QAbstractAnimation::DeleteWhenStopped
+                 * 动画结束后进行自清理(效果就好像智能指针里的自动delete animation) */
+                animation->start(QAbstractAnimation::DeleteWhenStopped);
+
+                connect(animation, SIGNAL(finished()), box, SLOT(deleteLater()));
             }
             // 保存满行的位置
             rows << y;
@@ -85,7 +105,9 @@ void MyView::clearFullRows()
     // 如果有满行，下移满行上面的各行再出现新的方块组
     // 如果没有满行，则直接出现新的方块组
     if(rows.count() > 0) {
-        moveBox();
+        //moveBox();
+        //单singleShot，表示它只会触发一次，发出一次信号，然后来执行槽函数。
+        QTimer::singleShot(400, this, SLOT(moveBox()));
     } else {
         boxGroup->createBox(QPointF(300, 70), nextBoxGroup->getCurrentShape());
         // 清空并销毁提示方块组中的所有小方块

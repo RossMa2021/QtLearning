@@ -2,6 +2,7 @@
 #include <QPainter>
 #include <QKeyEvent>
 #include <QTimer>
+#include <QDebug>
 
 OneBox::OneBox(const QColor &color) : brushColor(color)
 {
@@ -57,6 +58,7 @@ QRectF BoxGroup::boundingRect() const
 
 void BoxGroup::keyPressEvent(QKeyEvent *event)
 {
+    qDebug() <<"进入键盘控制";
     switch (event->key())
     {
     case Qt::Key_Down :
@@ -85,9 +87,10 @@ void BoxGroup::keyPressEvent(QKeyEvent *event)
         break;
 
     case Qt::Key_Up :
+        qDebug() <<"输入向上";
         setRotation(90);//  rotate(90);
         if(isColliding())
-            setRotation(90); //rotate(-90);
+            setRotation(-90); //rotate(-90);
         break;
 
     // 空格键实现坠落

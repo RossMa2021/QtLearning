@@ -21,6 +21,7 @@ public slots:
 private:
     BoxGroup *boxGroup;
     BoxGroup *nextBoxGroup;
+    BoxGroup *testBoxGroup;
     QGraphicsLineItem *topLine;
     QGraphicsLineItem *bottomLine;
     QGraphicsLineItem *leftLine;

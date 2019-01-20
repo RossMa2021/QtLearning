@@ -8,7 +8,7 @@ OneBox::OneBox(const QColor &color) : brushColor(color)
 {
 }
 
-//矩形边框 Bounding Rectangle
+//矩形边框 Bounding Rectangle 该函数为指定后面的绘图区域的外边框
 QRectF OneBox::boundingRect() const
 {
     qreal penWidth = 1;
@@ -26,10 +26,12 @@ void OneBox::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QW
     // 将颜色的透明度减小
     penColor.setAlpha(220);
     painter->setPen(penColor);
+    //这里画矩形框，框内填充部分用画刷画，框外线条用画笔画
     painter->drawRect(-10, -10, 20, 20);
 }
 
 // 形状比边框矩形小0.5像素，这样方块组中的小方块才不会发生碰撞
+//在局部坐标点上返回item的shape,但是好像没有其它地方调用了该函数
 QPainterPath OneBox::shape() const
 {
     QPainterPath path;
@@ -39,7 +41,7 @@ QPainterPath OneBox::shape() const
 
 BoxGroup::BoxGroup()
 {
-    setFlags(QGraphicsItem::ItemIsFocusable);
+    setFlags(QGraphicsItem::ItemIsFocusable);//允许设置输入焦点
 
     // 保存变换矩阵，当BoxGroup进行旋转后，可以使用它来进行恢复
     oldTransform = transform();
@@ -88,9 +90,12 @@ void BoxGroup::keyPressEvent(QKeyEvent *event)
 
     case Qt::Key_Up :
         qDebug() <<"输入向上";
-        setRotation(90);//  rotate(90);
+        //rotate(90);
+        setRotation(rotation() + 90);
         if(isColliding())
-            setRotation(-90); //rotate(-90);
+            //rotate(-90);
+            setRotation(rotation() - 90);
+            //setRotation(-90); //rotate(-90);
         break;
 
     // 空格键实现坠落
@@ -110,7 +115,8 @@ void BoxGroup::keyPressEvent(QKeyEvent *event)
 bool BoxGroup::isColliding()
 {
     //QGraphicsItem 自带的碰撞检测
-    QList<QGraphicsItem *> itemList = childItems();
+    QList<QGraphicsItem *> itemList = childItems();//返回子item列表
+    qDebug()<<"个数是：" <<itemList.count();
     QGraphicsItem *item;
     foreach (item, itemList) {
         if(item->collidingItems().count() > 1)
@@ -154,10 +160,10 @@ void BoxGroup::createBox(const QPointF &point, BoxShape shape)
 
     QList<OneBox* > list;
     //恢复方块组的变换矩阵
-    setTransform(oldTransform);
-    for (int i = 0; i < 4; ++i) {
+    setTransform(oldTransform);//恢复方块组前的变换矩阵
+    for (int i = 0; i < 4; ++i) { //4个小方块组成一个方块组
         OneBox *temp = new OneBox(color);
-        list << temp;
+        list << temp;//将小方块加入list列表
         addToGroup(temp);
     }
 

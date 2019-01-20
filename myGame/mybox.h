@@ -9,7 +9,7 @@ class OneBox : public QGraphicsObject
 {
 public:
     OneBox(const QColor &color = Qt::red);//构造函数
-    QRectF boundingRect() const;
+    QRectF boundingRect() const; //表示所有绘制的边界
     void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget);
     QPainterPath shape() const;
 
@@ -28,9 +28,7 @@ public:
                        TShape, ZShape, RandomShape};
 
     BoxGroup();
-    QRectF boundingRect() const;
-
-
+    QRectF boundingRect() const; //在函数后用const表示不能改变类的成员
     bool isColliding();
     void createBox(const QPointF &point = QPointF(0, 0), BoxShape shape = RandomShape);
     void clearBoxGroup(bool destroyBox = false);

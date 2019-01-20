@@ -45,11 +45,15 @@ void MyView::initView()
 
     // 当前方块组和提示方块组
     boxGroup = new BoxGroup;
-    connect(boxGroup, SIGNAL(needNewBox()), this, SLOT(clearFullRows()));
-    connect(boxGroup, SIGNAL(gameFinished()), this, SLOT(gameOver()));
     scene->addItem(boxGroup);
     nextBoxGroup = new BoxGroup;
     scene->addItem(nextBoxGroup);
+
+    connect(boxGroup, SIGNAL(needNewBox()), this, SLOT(clearFullRows()));
+    connect(boxGroup, SIGNAL(gameFinished()), this, SLOT(gameOver()));
+
+    //testBoxGroup = new BoxGroup;
+    //scene->addItem(testBoxGroup);
 
     startGame();
 }
@@ -68,6 +72,8 @@ void MyView::initGame()
     boxGroup->startTimer(INITSPEED);
     gameSpeed = INITSPEED;
     nextBoxGroup->createBox(QPointF(500, 70));
+
+    //testBoxGroup->createBox(QPointF(300, 150));
 }
 
 // 清空满行

@@ -5,6 +5,7 @@
 #-------------------------------------------------
 
 QT       += core gui
+QT       += sql xml
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
@@ -26,10 +27,13 @@ CONFIG += c++11
 
 SOURCES += \
         main.cpp \
-        widget.cpp
+        widget.cpp \
+    pieview.cpp
 
 HEADERS += \
-        widget.h
+        widget.h \
+    connection.h \
+    pieview.h
 
 FORMS += \
         widget.ui

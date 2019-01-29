@@ -22,8 +22,10 @@ public:
     ~Widget();
 
 protected:
+    // 处理新用户加入
     void newParticipant(QString userName,
                         QString localHostName, QString ipAddress);
+    // 处理用户离开
     void participantLeft(QString userName,
                          QString localHostName, QString time);
     void sendMessage(MessageType type, QString serverAddress="");

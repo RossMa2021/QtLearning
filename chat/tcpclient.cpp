@@ -29,20 +29,20 @@ TcpClient::~TcpClient()
     delete ui;
 }
 
-// ÉèÖÃÎÄ¼þÃû
+// è®¾ç½®æ–‡ä»¶å
 void TcpClient::setFileName(QString fileName)
 {
     localFile = new QFile(fileName);
 }
 
-// ÉèÖÃµØÖ·
+// è®¾ç½®åœ°å€
 void TcpClient::setHostAddress(QHostAddress address)
 {
     hostAddress = address;
     newConnect();
 }
 
-// ´´½¨ÐÂÁ¬½Ó
+// åˆ›å»ºæ–°è¿žæŽ¥
 void TcpClient::newConnect()
 {
     blockSize = 0;
@@ -51,7 +51,7 @@ void TcpClient::newConnect()
     time.start();
 }
 
-// ¶ÁÈ¡Êý¾Ý
+// è¯»å–æ•°æ®
 void TcpClient::readMessage()
 {
     QDataStream in(tcpClient);
@@ -71,7 +71,7 @@ void TcpClient::readMessage()
             bytesReceived +=fileNameSize;
 
             if(!localFile->open(QFile::WriteOnly)){
-                QMessageBox::warning(this,tr("Ó¦ÓÃ³ÌÐò"),tr("ÎÞ·¨¶ÁÈ¡ÎÄ¼þ %1:\n%2.")
+                QMessageBox::warning(this,tr("åº”ç”¨ç¨‹åº"),tr("æ— æ³•è¯»å–æ–‡ä»¶ %1:\n%2.")
                                      .arg(fileName).arg(localFile->errorString()));
                 return;
             }
@@ -89,8 +89,8 @@ void TcpClient::readMessage()
     ui->progressBar->setValue(bytesReceived);
 
     double speed = bytesReceived / useTime;
-    ui->tcpClientStatusLabel->setText(tr("ÒÑ½ÓÊÕ %1MB (%2MB/s) "
-                                         "\n¹²%3MB ÒÑÓÃÊ±:%4Ãë\n¹À¼ÆÊ£ÓàÊ±¼ä£º%5Ãë")
+    ui->tcpClientStatusLabel->setText(tr("å·²æŽ¥æ”¶ %1MB (%2MB/s) "
+                                         "\nå…±%3MB å·²ç”¨æ—¶:%4ç§’\nä¼°è®¡å‰©ä½™æ—¶é—´ï¼š%5ç§’")
                                       .arg(bytesReceived / (1024*1024))
                                       .arg(speed*1000/(1024*1024),0,'f',2)
                                       .arg(TotalBytes / (1024 * 1024))
@@ -101,12 +101,12 @@ void TcpClient::readMessage()
     {
         localFile->close();
         tcpClient->close();
-        ui->tcpClientStatusLabel->setText(tr("½ÓÊÕÎÄ¼þ %1 Íê±Ï")
+        ui->tcpClientStatusLabel->setText(tr("æŽ¥æ”¶æ–‡ä»¶ %1 å®Œæ¯•")
                                           .arg(fileName));
     }
 }
 
-// ´íÎó´¦Àí
+// é”™è¯¯å¤„ç†
 void TcpClient::displayError(QAbstractSocket::SocketError socketError)
 {
     switch(socketError)
@@ -116,7 +116,7 @@ void TcpClient::displayError(QAbstractSocket::SocketError socketError)
     }
 }
 
-// È¡Ïû°´Å¥
+// å–æ¶ˆæŒ‰é’®
 void TcpClient::on_tcpClientCancleBtn_clicked()
 {
     tcpClient->abort();
@@ -124,7 +124,7 @@ void TcpClient::on_tcpClientCancleBtn_clicked()
         localFile->close();
 }
 
-// ¹Ø±Õ°´Å¥
+// å…³é—­æŒ‰é’®
 void TcpClient::on_tcpClientCloseBtn_clicked()
 {
     tcpClient->abort();
@@ -133,7 +133,7 @@ void TcpClient::on_tcpClientCloseBtn_clicked()
     close();
 }
 
-// ¹Ø±ÕÊÂ¼þ
+// å…³é—­äº‹ä»¶
 void TcpClient::closeEvent(QCloseEvent *)
 {
     on_tcpClientCloseBtn_clicked();

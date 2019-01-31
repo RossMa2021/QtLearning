@@ -28,7 +28,7 @@ TcpServer::~TcpServer()
     delete ui;
 }
 
-// ³õÊ¼»¯
+// åˆå§‹åŒ–
 void TcpServer::initServer()
 {
     payloadSize = 64*1024;
@@ -36,7 +36,7 @@ void TcpServer::initServer()
     bytesWritten = 0;
     bytesToWrite = 0;
 
-    ui->serverStatusLabel->setText(tr("ÇëÑ¡ÔñÒª´«ËÍµÄÎÄ¼ş"));
+    ui->serverStatusLabel->setText(tr("è¯·é€‰æ‹©è¦ä¼ é€çš„æ–‡ä»¶"));
     ui->progressBar->reset();
     ui->serverOpenBtn->setEnabled(true);
     ui->serverSendBtn->setEnabled(false);
@@ -44,7 +44,7 @@ void TcpServer::initServer()
     tcpServer->close();
 }
 
-// ¿ªÊ¼·¢ËÍÊı¾İ
+// å¼€å§‹å‘é€æ•°æ®
 void TcpServer::sendMessage()
 {
     ui->serverSendBtn->setEnabled(false);
@@ -52,18 +52,18 @@ void TcpServer::sendMessage()
     connect(clientConnection, SIGNAL(bytesWritten(qint64)),
             this, SLOT(updateClientProgress(qint64)));
 
-    ui->serverStatusLabel->setText(tr("¿ªÊ¼´«ËÍÎÄ¼ş %1 £¡").arg(theFileName));
+    ui->serverStatusLabel->setText(tr("å¼€å§‹ä¼ é€æ–‡ä»¶ %1 ï¼").arg(theFileName));
 
     localFile = new QFile(fileName);
     if(!localFile->open((QFile::ReadOnly))){
-        QMessageBox::warning(this, tr("Ó¦ÓÃ³ÌĞò"), tr("ÎŞ·¨¶ÁÈ¡ÎÄ¼ş %1:\n%2")
+        QMessageBox::warning(this, tr("åº”ç”¨ç¨‹åº"), tr("æ— æ³•è¯»å–æ–‡ä»¶ %1:\n%2")
                              .arg(fileName).arg(localFile->errorString()));
         return;
     }
     TotalBytes = localFile->size();
     QDataStream sendOut(&outBlock, QIODevice::WriteOnly);
-    sendOut.setVersion(QDataStream::Qt_4_7);
-    time.start();  // ¿ªÊ¼¼ÆÊ±
+    sendOut.setVersion(QDataStream::Qt_5_11);
+    time.start();  // å¼€å§‹è®¡æ—¶
     QString currentFile = fileName.right(fileName.size()
                                          - fileName.lastIndexOf('/')-1);
     sendOut << qint64(0) << qint64(0) << currentFile;
@@ -74,66 +74,72 @@ void TcpServer::sendMessage()
     outBlock.resize(0);
 }
 
-// ¸üĞÂ½ø¶ÈÌõ
+// æ›´æ–°è¿›åº¦æ¡
 void TcpServer::updateClientProgress(qint64 numBytes)
 {
     qApp->processEvents();
+    //å·²ç»å‘é€æ•°æ®çš„å¤§å°
     bytesWritten += (int)numBytes;
+    //å¦‚æœå·²ç»å‘é€äº†æ•°æ®
     if (bytesToWrite > 0) {
+        //æ¯æ¬¡å‘é€payloadSizeå¤§å°
         outBlock = localFile->read(qMin(bytesToWrite, payloadSize));
         bytesToWrite -= (int)clientConnection->write(outBlock);
+        //æ¸…ç©ºç¼“å†²åŒº
         outBlock.resize(0);
     } else {
         localFile->close();
     }
+    //æ›´æ–°è¿›åº¦æ¡ä¿¡æ¯ï¼Œæ‰€ç”¨æ—¶é—´ç­‰
     ui->progressBar->setMaximum(TotalBytes);
     ui->progressBar->setValue(bytesWritten);
-
     float useTime = time.elapsed();
     double speed = bytesWritten / useTime;
-    ui->serverStatusLabel->setText(tr("ÒÑ·¢ËÍ %1MB (%2MB/s) "
-                   "\n¹²%3MB ÒÑÓÃÊ±:%4Ãë\n¹À¼ÆÊ£ÓàÊ±¼ä£º%5Ãë")
+
+    ui->serverStatusLabel->setText(tr("å·²å‘é€ %1MB (%2MB/s) "
+                   "\nå…±%3MB å·²ç”¨æ—¶:%4ç§’\nä¼°è®¡å‰©ä½™æ—¶é—´ï¼š%5ç§’")
                    .arg(bytesWritten / (1024*1024))
                    .arg(speed*1000 / (1024*1024), 0, 'f', 2)
                    .arg(TotalBytes / (1024 * 1024))
                    .arg(useTime/1000, 0, 'f', 0)
                    .arg(TotalBytes/speed/1000 - useTime/1000, 0, 'f', 0));
 
+    //å¦‚æœå‘é€å®Œæ¯•
     if(bytesWritten == TotalBytes) {
         localFile->close();
         tcpServer->close();
-        ui->serverStatusLabel->setText(tr("´«ËÍÎÄ¼ş %1 ³É¹¦").arg(theFileName));
+        ui->serverStatusLabel->setText(tr("ä¼ é€æ–‡ä»¶ %1 æˆåŠŸ").arg(theFileName));
     }
 }
 
-// ´ò¿ª°´Å¥
+// æ‰“å¼€æŒ‰é’®
 void TcpServer::on_serverOpenBtn_clicked()
 {
     fileName = QFileDialog::getOpenFileName(this);
     if(!fileName.isEmpty())
     {
         theFileName = fileName.right(fileName.size() - fileName.lastIndexOf('/')-1);
-        ui->serverStatusLabel->setText(tr("Òª´«ËÍµÄÎÄ¼şÎª£º%1 ").arg(theFileName));
+        ui->serverStatusLabel->setText(tr("è¦ä¼ é€çš„æ–‡ä»¶ä¸ºï¼š%1 ").arg(theFileName));
         ui->serverSendBtn->setEnabled(true);
         ui->serverOpenBtn->setEnabled(false);
     }
 }
 
-// ·¢ËÍ°´Å¥
+// å‘é€æŒ‰é’®
 void TcpServer::on_serverSendBtn_clicked()
 {
-    if(!tcpServer->listen(QHostAddress::Any,tcpPort))//¿ªÊ¼¼àÌı
+    if(!tcpServer->listen(QHostAddress::Any,tcpPort))//å¼€å§‹ç›‘å¬
     {
         qDebug() << tcpServer->errorString();
         close();
         return;
     }
 
-    ui->serverStatusLabel->setText(tr("µÈ´ı¶Ô·½½ÓÊÕ... ..."));
+    ui->serverStatusLabel->setText(tr("ç­‰å¾…å¯¹æ–¹æ¥æ”¶... ..."));
     emit sendFileName(theFileName);
 }
 
-// ¹Ø±Õ°´Å¥
+// å…³é—­æŒ‰é’®
 void TcpServer::on_serverCloseBtn_clicked()
 {
     if(tcpServer->isListening())
@@ -146,14 +152,14 @@ void TcpServer::on_serverCloseBtn_clicked()
     close();
 }
 
-// ±»¶Ô·½¾Ü¾ø
+// è¢«å¯¹æ–¹æ‹’ç»
 void TcpServer::refused()
 {
     tcpServer->close();
-    ui->serverStatusLabel->setText(tr("¶Ô·½¾Ü¾ø½ÓÊÕ£¡£¡£¡"));
+    ui->serverStatusLabel->setText(tr("å¯¹æ–¹æ‹’ç»æ¥æ”¶ï¼ï¼ï¼"));
 }
 
-// ¹Ø±ÕÊÂ¼ş
+// å…³é—­äº‹ä»¶
 void TcpServer::closeEvent(QCloseEvent *)
 {
     on_serverCloseBtn_clicked();

@@ -4,14 +4,14 @@
 #include <QWidget>
 class QUdpSocket;
 
+class TcpServer;
+
 namespace Ui {
 class Widget;
 }
 
 // 枚举变量标志信息的类型，分别为消息，新用户加入，用户退出，文件名，拒绝接受文件
 enum MessageType{Message, NewParticipant, ParticipantLeft, FileName, Refuse};
-
-
 
 class Widget : public QWidget
 {
@@ -34,15 +34,22 @@ protected:
     QString getUserName();
     QString getMessage();
 
+    void hasPendingFile(QString userName, QString serverAddress,
+                        QString clientAddress, QString fileName);
 private:
     Ui::Widget *ui;
     QUdpSocket *udpSocket;
     qint16 port;
 
+    QString fileName;
+    TcpServer *server;
 private slots:
     void processPendingDatagrams();
 
     void on_sendButton_clicked();
+
+    void getFileName(QString);
+    void on_sendToolBtn_clicked();
 };
 
 #endif // WIDGET_H

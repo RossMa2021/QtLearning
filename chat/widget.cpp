@@ -217,7 +217,6 @@ void Widget::on_sendButton_clicked()
     sendMessage(Message);
 }
 
-//***************************************发送文件*************************************
 
 // 获取要发送的文件名
 void Widget::getFileName(QString name)
